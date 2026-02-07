@@ -1,0 +1,20 @@
+services:
+  livify:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: livify-app
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  livify-dev:
+    image: node:20-alpine
+    container_name: livify-dev
+    working_dir: /app
+    command: sh -c "npm install -g live-server@1.2.2 && live-server --host=0.0.0.0 --port=8080 --no-browser --watch=."
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    restart: unless-stopped

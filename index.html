@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Livify</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <h1>Livify</h1>
+        <p class="subhead">Life OS shell</p>
+        <nav>
+          <a href="#today">Today</a>
+          <a href="#tasks">Tasks</a>
+          <a href="#habits">Habits</a>
+          <a href="#notes">Notes</a>
+          <a href="#vision">Vision</a>
+        </nav>
+      </aside>
+
+      <section class="content">
+        <header id="today" class="panel">
+          <div>
+            <p class="eyebrow">Daily Pulse</p>
+            <h2 id="todayLabel"></h2>
+          </div>
+          <label class="energy">
+            Energy
+            <input id="energy" type="range" min="1" max="10" value="6" />
+            <span id="energyValue">6/10</span>
+          </label>
+        </header>
+
+        <section id="tasks" class="panel">
+          <h3>Top Tasks</h3>
+          <form id="taskForm" class="inline-form">
+            <input id="taskInput" type="text" placeholder="What matters most today?" required />
+            <button type="submit">Add</button>
+          </form>
+          <ul id="taskList" class="list"></ul>
+        </section>
+
+        <section id="habits" class="panel">
+          <h3>Habits</h3>
+          <form id="habitForm" class="inline-form">
+            <input id="habitInput" type="text" placeholder="Habit name (e.g. 10 min walk)" required />
+            <button type="submit">Add</button>
+          </form>
+          <ul id="habitList" class="list"></ul>
+        </section>
+
+        <section id="notes" class="panel">
+          <h3>Brain Dump</h3>
+          <textarea id="notesInput" rows="6" placeholder="Capture thoughts, worries, ideas, and next actions..."></textarea>
+        </section>
+
+        <section id="vision" class="panel">
+          <h3>3 Outcomes This Week</h3>
+          <textarea id="outcomesInput" rows="4" placeholder="- Outcome 1&#10;- Outcome 2&#10;- Outcome 3"></textarea>
+        </section>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
