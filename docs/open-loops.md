@@ -6,3 +6,4 @@ Items that require future thought or revisit.
 - How to surface "things to revisit" prominently in Livefy UI
 - When and how to safely introduce OpenClaw
 - Ideal data model for decisions and follow-ups
+- Whether OpenClaw should run on home hardware or VPS first

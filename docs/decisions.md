@@ -5,3 +5,7 @@
 - Use Livefy as capture and surfacing layer before adding automation
 - Defer OpenClaw until data capture loop is reliable
 - Keep Phase 1 intentionally simple
+- Keep Livefy as system of record; OpenClaw is an operator only
+- Introduce OpenClaw behind a minimal ingest API (inbox/open loop/task writes only)
+- Require explicit confirmation for privileged actions (email/calendar/external side effects)
+- Treat third-party skills/extensions as high risk until vetted process exists
