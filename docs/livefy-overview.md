@@ -35,6 +35,8 @@ You should never have to stop and decide:
 
 Everything can go into a single Inbox first. Organization is optional and deferred.
 
+This principle is detailed in `docs/capture-and-organize.md` as the operational "capture now, organize later" workflow.
+
 ---
 
 ### 3. Structure Later, With Context
