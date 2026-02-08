@@ -10,3 +10,12 @@
   - Extract button
   - Display extracted items
 - Decide initial storage format (markdown vs JSON)
+- Add `docs/openclaw-integration.md` cross-links from overview/pitch docs
+- Define and document the minimal ingest API contract:
+  - `append_inbox`
+  - `create_open_loop`
+  - `create_task`
+- Choose OpenClaw runtime location:
+  - Home dedicated box (privacy-first), or
+  - VPS (availability-first)
+- Draft Phase 2 permission matrix (allowed actions vs explicit confirmation required)
