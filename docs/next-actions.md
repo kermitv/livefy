@@ -10,7 +10,13 @@
   - Extract button
   - Display extracted items
 - Decide initial storage format (markdown vs JSON)
+- Define Inbox entry schema (minimal required fields + optional tags/project link)
+- Add basic processing flow:
+  - select inbox items
+  - extract into decisions/open loops/next actions
+  - require manual review before moving items
 - Add `docs/openclaw-integration.md` cross-links from overview/pitch docs
+- Add `docs/capture-and-organize.md` cross-links from overview and architecture
 - Define and document the minimal ingest API contract:
   - `append_inbox`
   - `create_open_loop`

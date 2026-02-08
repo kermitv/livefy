@@ -9,3 +9,5 @@
 - Introduce OpenClaw behind a minimal ingest API (inbox/open loop/task writes only)
 - Require explicit confirmation for privileged actions (email/calendar/external side effects)
 - Treat third-party skills/extensions as high risk until vetted process exists
+- Adopt "capture now, organize later" as the default UX rule for Phase 1
+- Defer runtime-placement decisions as tracked open loops; do not block capture workflow on infrastructure choices

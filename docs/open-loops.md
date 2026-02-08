@@ -7,3 +7,4 @@ Items that require future thought or revisit.
 - When and how to safely introduce OpenClaw
 - Ideal data model for decisions and follow-ups
 - Whether OpenClaw should run on home hardware or VPS first
+- Final runtime/hosting architecture (explicitly deferred until after Phase 1 capture loop is stable)

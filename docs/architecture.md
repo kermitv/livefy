@@ -19,7 +19,7 @@ Design rule: automation is a client of memory, not the owner of memory.
 
 ## Phase 1 MVP
 - Single-page UI
-- Text area for pasting notes or conversations
+- Universal Inbox text area for notes/conversations/tasks/thoughts
 - "Extract" button
 - Local LLM processes input
 - Outputs:
@@ -27,6 +27,9 @@ Design rule: automation is a client of memory, not the owner of memory.
   - Open loops
   - Next actions
 - Results saved locally (markdown or JSON)
+- Optional tags/project links at processing time (not required at capture time)
+
+Reference workflow: `docs/capture-and-organize.md`.
 
 ## Explicit Non-Goals (Phase 1)
 - No background automation
@@ -44,3 +47,8 @@ When OpenClaw is introduced:
   - create open loop
   - create task
 - block unrestricted filesystem roaming and arbitrary shell execution
+
+## Explicit Deferral
+
+- Runtime placement details ("where it runs") are intentionally deferred and tracked as an open loop.
+- Phase 1 must remain unblocked by unresolved infrastructure choices.
