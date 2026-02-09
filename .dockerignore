@@ -1,4 +1,6 @@
 .git
 .gitignore
+node_modules
+dist
 README.md
 BRAINSTORM.md
