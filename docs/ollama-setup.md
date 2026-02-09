@@ -17,16 +17,33 @@ If not installed:
 brew install ollama
 ```
 
-## 2) Start Local Server
-In a dedicated terminal:
+## 2) Start Local Server (Pick One)
+Option A (recommended to start, manual server):
 
 ```bash
-ollama serve
+OLLAMA_FLASH_ATTENTION="1" OLLAMA_KV_CACHE_TYPE="q8_0" ollama serve
 ```
 
-Expected endpoint: `127.0.0.1:11434`.
+Why this is a good default on Apple Silicon:
+- `OLLAMA_FLASH_ATTENTION=1` improves inference speed
+- `OLLAMA_KV_CACHE_TYPE=q8_0` can reduce memory pressure
 
-## 3) Choose a Starter Model (M1, 16 GB)
+Option B (background service):
+
+```bash
+brew services start ollama
+```
+
+## 3) Verify Server Health
+Run:
+
+```bash
+curl -s http://127.0.0.1:11434/api/tags | head
+```
+
+Success signal: JSON output is returned.
+
+## 4) Choose a Starter Model (M1, 16 GB)
 Use a small model first for responsiveness.
 
 Option A:
@@ -45,17 +62,17 @@ ollama run qwen2.5:3b
 
 Recommended first pick: `phi3`.
 
-## 4) Quick Prompt Sanity Check
+## 5) Quick Prompt Sanity Check
 In the interactive model prompt, test with:
 
 ```text
-Extract decisions, open loops, and next actions from:
-"I'll defer where OpenClaw runs until later. Build Livefy inbox UI first. Install Ollama on Mac. Consider Vercel capture from phone."
+Extract and return JSON with keys "decisions", "open_loops", "next_actions" from:
+"I'll defer where OpenClaw runs until later. Build Livefy Inbox UI first. Install Ollama on Mac. Consider phone capture via Vercel."
 ```
 
-Success signal: quick response and acceptable system responsiveness.
+Success signal: sensible JSON returned quickly and system remains responsive.
 
-## 5) Monitor and Stop Running Models
+## 6) Monitor and Stop Running Models
 Check active models:
 
 ```bash
@@ -72,7 +89,7 @@ ollama stop qwen2.5:3b
 
 On 16 GB systems, stopping models helps reclaim memory quickly.
 
-## 6) Validate API Endpoint for Livefy Integration
+## 7) Validate API Endpoint for Livefy Integration
 Run:
 
 ```bash
@@ -87,12 +104,15 @@ curl http://127.0.0.1:11434/api/generate \
 
 Success signal: JSON response returned from local API.
 
-## 7) Practical Mac Usage Defaults
+## 8) Practical Mac Usage Defaults
 When actively running Ollama:
 - Prefer one browser and fewer heavy background apps
 - Close Docker Desktop unless needed
 - Keep active editor windows minimal
 - Watch memory/swap and reduce concurrent workload if pressure rises
+
+For memory diagnostics and "AI mode" process triage:
+- `docs/mac-memory-ai-mode.md`
 
 ## Next Step
 Pick optimization priority:
@@ -105,3 +125,5 @@ Then capture:
 ollama --version
 ollama list
 ```
+
+Then keep extraction in Livefy rule-based until UI/store contracts are stable, and swap extraction engine behind a toggle.
