@@ -63,6 +63,7 @@ docker compose stop livify
 - `compose.yaml`: local container orchestration
 - `Dockerfile`: Vite build + Nginx runtime image
 - `docs/`: in-app loadable Markdown documentation
+- `dist/docs/index.json`: auto-generated docs manifest used by the in-app docs panel
 - `BRAINSTORM.md`: product direction and next decisions
 
 ## Docs Deep Link
