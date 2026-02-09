@@ -75,3 +75,26 @@ Open a specific docs page directly with:
 Example:
 
 [http://localhost:8080/#docs?file=decisions.md](http://localhost:8080/#docs?file=decisions.md)
+
+## Quick Test Checklist
+
+1. Start dev server:
+
+```bash
+cd /Users/kermitv/Projects/Livify
+docker compose up livify-dev
+```
+
+2. Confirm docs manifest endpoint:
+
+[http://localhost:8080/docs/index.json](http://localhost:8080/docs/index.json)
+
+3. In app, open Docs panel and verify:
+- `ollama-windows-setup.md` appears in dropdown
+- selecting it renders content
+
+4. Verify deep links:
+- [http://localhost:8080/#docs?file=ollama-windows-setup.md](http://localhost:8080/#docs?file=ollama-windows-setup.md)
+- [http://localhost:8080/#docs?file=decisions.md](http://localhost:8080/#docs?file=decisions.md)
+
+5. Change docs via dropdown and verify URL hash updates; test browser back/forward sync.
