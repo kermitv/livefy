@@ -15,10 +15,15 @@
         <p class="subhead">Life OS shell</p>
         <nav>
           <a href="#today">Today</a>
+          <a href="#inbox">Inbox</a>
+          <a href="#decisions">Decisions</a>
+          <a href="#openLoops">Open Loops</a>
+          <a href="#nextActions">Next Actions</a>
           <a href="#tasks">Tasks</a>
           <a href="#habits">Habits</a>
           <a href="#notes">Notes</a>
           <a href="#vision">Vision</a>
+          <a href="#docs">Docs</a>
         </nav>
       </aside>
 
@@ -44,6 +49,34 @@
           <ul id="taskList" class="list"></ul>
         </section>
 
+        <section id="inbox" class="panel">
+          <h3>Inbox</h3>
+          <p class="panel-hint">Paste messy thinking here. Extract later into structure.</p>
+          <textarea
+            id="inboxInput"
+            rows="6"
+            placeholder="Paste notes or conversation lines. Prefix with Decision:, Action:, or Open Loop: for better extraction."
+          ></textarea>
+          <div class="actions-row">
+            <button id="extractInboxButton" type="button">Extract</button>
+          </div>
+        </section>
+
+        <section id="decisions" class="panel">
+          <h3>Decisions</h3>
+          <ul id="decisionList" class="list"></ul>
+        </section>
+
+        <section id="openLoops" class="panel">
+          <h3>Open Loops</h3>
+          <ul id="openLoopList" class="list"></ul>
+        </section>
+
+        <section id="nextActions" class="panel">
+          <h3>Next Actions</h3>
+          <ul id="nextActionList" class="list"></ul>
+        </section>
+
         <section id="habits" class="panel">
           <h3>Habits</h3>
           <form id="habitForm" class="inline-form">
@@ -61,6 +94,17 @@
         <section id="vision" class="panel">
           <h3>3 Outcomes This Week</h3>
           <textarea id="outcomesInput" rows="4" placeholder="- Outcome 1&#10;- Outcome 2&#10;- Outcome 3"></textarea>
+        </section>
+
+        <section id="docs" class="panel">
+          <h3>Docs</h3>
+          <div class="docs-toolbar">
+            <label for="docsSelect">Document</label>
+            <select id="docsSelect"></select>
+            <button id="docsReloadButton" type="button" class="ghost">Reload</button>
+          </div>
+          <p id="docsStatus" class="docs-status"></p>
+          <article id="docsContent" class="docs-content"></article>
         </section>
       </section>
     </main>

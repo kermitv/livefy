@@ -8,6 +8,8 @@ export function createStore({ adapter, onChange }) {
     setEnergy,
     setNotes,
     setOutcomes,
+    setInboxDraft,
+    extractInboxDraft,
     addTask,
     removeTask,
     setTaskDone,
@@ -45,6 +47,34 @@ export function createStore({ adapter, onChange }) {
     commit({
       ...state,
       dashboard: { ...state.dashboard, outcomes: String(value) },
+    });
+  }
+
+  function setInboxDraft(value) {
+    commit({
+      ...state,
+      capture: {
+        ...state.capture,
+        inboxDraft: String(value),
+      },
+    });
+  }
+
+  function extractInboxDraft() {
+    const extracted = extractStructuredItems(state.capture.inboxDraft);
+    if (extracted.decisions.length === 0 && extracted.openLoops.length === 0 && extracted.nextActions.length === 0) {
+      return;
+    }
+    const now = new Date().toISOString();
+    commit({
+      ...state,
+      capture: {
+        inboxDraft: "",
+        lastExtractedAt: now,
+      },
+      decisions: [...extracted.decisions, ...state.decisions],
+      openLoops: [...extracted.openLoops, ...state.openLoops],
+      nextActions: [...extracted.nextActions, ...state.nextActions],
     });
   }
 
@@ -127,4 +157,75 @@ function clone(value) {
 function makeId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `id_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function extractStructuredItems(rawInput) {
+  const lines = splitIntoCandidateLines(rawInput);
+  const decisions = [];
+  const openLoops = [];
+  const nextActions = [];
+
+  for (const line of lines) {
+    const clean = line.trim();
+    if (!clean) continue;
+    const decision = stripPrefix(clean, /^(decision|decide|we decided|i decided)\s*[:\-]?\s*/i);
+    if (decision) {
+      decisions.push(createStructuredItem(decision));
+      continue;
+    }
+
+    const action = stripPrefix(clean, /^(next action|action|todo|task)\s*[:\-]?\s*/i) || stripCheckbox(clean);
+    if (action) {
+      nextActions.push(createStructuredItem(action));
+      continue;
+    }
+
+    const loop = stripPrefix(clean, /^(open loop|question|later|follow up|follow-up)\s*[:\-]?\s*/i);
+    if (loop || clean.includes("?")) {
+      openLoops.push(createStructuredItem(loop || clean));
+      continue;
+    }
+
+    // Default unmatched lines to open loops to preserve unresolved thinking.
+    openLoops.push(createStructuredItem(clean));
+  }
+
+  return {
+    decisions: dedupeByText(decisions),
+    openLoops: dedupeByText(openLoops),
+    nextActions: dedupeByText(nextActions),
+  };
+}
+
+function splitIntoCandidateLines(rawInput) {
+  return String(rawInput)
+    .split(/\n+/g)
+    .map((line) => line.replace(/^[\s*-]+/, "").trim())
+    .filter(Boolean);
+}
+
+function stripPrefix(text, regex) {
+  if (!regex.test(text)) return "";
+  return text.replace(regex, "").trim();
+}
+
+function stripCheckbox(text) {
+  if (!/^\[[ xX]\]/.test(text)) return "";
+  return text.replace(/^\[[ xX]\]\s*/, "").trim();
+}
+
+function createStructuredItem(text) {
+  return { id: makeId(), text, createdAt: new Date().toISOString() };
+}
+
+function dedupeByText(items) {
+  const seen = new Set();
+  const next = [];
+  for (const item of items) {
+    const key = item.text.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    next.push(item);
+  }
+  return next;
 }

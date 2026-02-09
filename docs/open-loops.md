@@ -2,9 +2,17 @@
 
 Items that require future thought or revisit.
 
-- Best long-term strategy for automating Ollama startup in WSL
-- How to surface "things to revisit" prominently in Livefy UI
+- Which Vite flavor to adopt first:
+  - Vanilla JS + Vite (minimal migration), or
+  - React + Vite (faster future iOS/shared UI convergence)
+- First public hosting target:
+  - Netlify / Vercel / Cloudflare Pages / GitHub Pages / S3+CloudFront
+- iOS implementation order:
+  - Capacitor wrapper first, or
+  - UI stack migration first
+- Long-term storage path:
+  - local-only
+  - optional sync backend
+  - iOS-native persistence choice
 - When and how to safely introduce OpenClaw
-- Ideal data model for decisions and follow-ups
 - Whether OpenClaw should run on home hardware or VPS first
-- Final runtime/hosting architecture (explicitly deferred until after Phase 1 capture loop is stable)

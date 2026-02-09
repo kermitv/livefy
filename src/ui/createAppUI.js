@@ -1,3 +1,5 @@
+import { createDocsPanel } from "./docsPanel.js";
+
 export function createAppUI({ store }) {
   const elements = getElements();
   const todayKey = isoDate(new Date());
@@ -33,13 +35,27 @@ export function createAppUI({ store }) {
     store.setOutcomes(elements.outcomesInput.value);
   });
 
+  elements.inboxInput.addEventListener("input", () => {
+    store.setInboxDraft(elements.inboxInput.value);
+  });
+
+  elements.extractInboxButton.addEventListener("click", () => {
+    store.extractInboxDraft();
+  });
+
+  createDocsPanel(elements);
+
   function render(state) {
     elements.energyInput.value = String(state.dashboard.energy);
     elements.energyValue.textContent = `${state.dashboard.energy}/10`;
     elements.notesInput.value = state.dashboard.notes;
     elements.outcomesInput.value = state.dashboard.outcomes;
+    elements.inboxInput.value = state.capture.inboxDraft;
     renderTasks(state.tasks);
     renderHabits(state.habits, state.habitChecksByDate[todayKey] || {});
+    renderSimpleItems(elements.decisionList, state.decisions);
+    renderSimpleItems(elements.openLoopList, state.openLoops);
+    renderSimpleItems(elements.nextActionList, state.nextActions);
   }
 
   function renderTasks(tasks) {
@@ -108,6 +124,16 @@ export function createAppUI({ store }) {
     }
   }
 
+  function renderSimpleItems(target, items) {
+    target.innerHTML = "";
+    for (const item of items) {
+      const li = document.createElement("li");
+      li.className = "list-row";
+      li.textContent = item.text;
+      target.append(li);
+    }
+  }
+
   render(store.getState());
   return { render };
 }
@@ -125,6 +151,16 @@ function getElements() {
     habitList: byId("habitList"),
     notesInput: byId("notesInput"),
     outcomesInput: byId("outcomesInput"),
+    inboxInput: byId("inboxInput"),
+    extractInboxButton: byId("extractInboxButton"),
+    decisionList: byId("decisionList"),
+    openLoopList: byId("openLoopList"),
+    nextActionList: byId("nextActionList"),
+    docsSection: byId("docs"),
+    docsSelect: byId("docsSelect"),
+    docsReloadButton: byId("docsReloadButton"),
+    docsStatus: byId("docsStatus"),
+    docsContent: byId("docsContent"),
   };
 }
 

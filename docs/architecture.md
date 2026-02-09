@@ -1,5 +1,18 @@
 # Livefy – Architecture Notes
 
+## Current Implementation (2026-02-09)
+
+- Runtime/framework: vanilla HTML/CSS/JS with browser ES modules
+- Entry point: `index.html` -> `main.js`
+- Module layout:
+  - `src/domain/schema.js` (versioned state + migration)
+  - `src/persistence/localStorageAdapter.js` (storage boundary)
+  - `src/store/createStore.js` (actions/business logic)
+  - `src/ui/createAppUI.js` (DOM rendering + event wiring)
+- Containers:
+  - `livify` service for production-style Nginx serving
+  - `livify-dev` service for live-reload local development
+
 ## Phase 1 Purpose
 Livefy acts as a capture and surfacing layer for life and work thinking.
 
@@ -8,6 +21,8 @@ Goals:
 - Integrate with local LLMs (Ollama) for extraction and summarization
 - Provide a simple UI to surface what matters
 - Defer automation (OpenClaw) until capture loop is stable
+
+Ollama local runbook: `docs/ollama-setup.md`.
 
 ## System Roles
 
@@ -52,3 +67,27 @@ When OpenClaw is introduced:
 
 - Runtime placement details ("where it runs") are intentionally deferred and tracked as an open loop.
 - Phase 1 must remain unblocked by unresolved infrastructure choices.
+
+## Deployment Direction (Approved)
+
+Move to Vite next. This is expected to improve public-host deployability by producing a portable static build artifact (`dist/`) and keeping clear dev/prod separation.
+
+Expected deploy targets after Vite migration:
+- Netlify
+- Vercel
+- Cloudflare Pages
+- GitHub Pages
+- S3 + CloudFront
+
+## iOS Direction (Compatible, Not Finalized)
+
+Current architecture is intentionally set up for dual-target evolution:
+- Web remains primary
+- iOS can be added by either:
+  - wrapping with Capacitor, or
+  - moving to a shared UI stack for web + iOS
+
+The critical enablers are already in place:
+- UI/state separation
+- storage abstraction
+- versioned domain model
