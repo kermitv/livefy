@@ -52,6 +52,12 @@ Allow fast capture and review of raw information.
 
 ## TASK-004: Local Backend Scaffold
 
+### Status
+
+Completed
+
+Dev-only /api/triage returns draft interpretations (mock)
+
 ### Goal
 
 Create LLM boundary without wiring intelligence yet.

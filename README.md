@@ -1,100 +1,64 @@
 # Livify
 
-A lightweight local-first life management app shell.
+Local-first personal memory and follow-through system.
 
-## Run (Vite Local)
+## Docker Modes
 
-```bash
-cd /Users/kermitv/Projects/Livify
-npm install
-npm run dev -- --host 0.0.0.0 --port 8080
-```
+- `livify-dev`: development mode (Vite client + local Node/Express API for `/api/triage` mock endpoint)
+- `livify`: production-style mode (Vite build served by nginx)
 
-Then open [http://localhost:8080](http://localhost:8080).
+Both services map to host port `8080`. Run one at a time.
 
-## Build + Preview (Vite Local)
+## Dev Startup (Recommended)
 
 ```bash
-cd /Users/kermitv/Projects/Livify
-npm run build
-npm run preview -- --host 0.0.0.0 --port 8080
+docker compose up -d livify-dev
+docker compose logs -f --tail=120 livify-dev
 ```
 
-Then open [http://localhost:8080](http://localhost:8080).
+Open [http://localhost:8080](http://localhost:8080).
 
-## Run (Docker)
+### Dev install behavior (codified)
+
+`livify-dev` uses a named volume (`livify_node_modules`) and auto-installs dependencies only when needed:
+
+- If `node_modules/.bin/concurrently` is missing, it runs `npm install`
+- If `package-lock.json` changed since last install, it runs `npm install` again
+- Otherwise it skips install and starts immediately
+
+No manual install step is required for normal use.
+
+## Restart Dev
 
 ```bash
-cd /Users/kermitv/Projects/Livify
-docker compose up --build livify
+docker compose down
+docker compose up -d livify-dev
 ```
 
-Then open [http://localhost:8080](http://localhost:8080).
-
-Stop with `Ctrl+C`, or run detached via `docker compose up -d --build`.
-
-## Run (Docker Dev Live-Reload)
+## Production-Style Run
 
 ```bash
-cd /Users/kermitv/Projects/Livify
-docker compose up livify-dev
+docker compose up -d --build livify
+docker compose logs -f --tail=120 livify
 ```
 
-Then open [http://localhost:8080](http://localhost:8080).
-Edits to app files auto-refresh via Vite HMR.
+Open [http://localhost:8080](http://localhost:8080).
 
-If `livify` is already running on port `8080`, stop it first:
+## Clean Rebuild (if needed)
+
+Use this when dependencies or volumes become inconsistent:
 
 ```bash
-docker compose stop livify
+docker compose down -v
+docker compose up -d --build livify-dev
 ```
 
-## Files
-- `index.html`: app structure
-- `styles.css`: visual design and responsive layout
-- `main.js`: web app entrypoint
-- `package.json`: Vite scripts and dependencies
-- `vite.config.js`: Vite config and docs copy plugin
-- `src/domain/schema.js`: versioned app state + migration
-- `src/persistence/localStorageAdapter.js`: storage adapter boundary
-- `src/store/createStore.js`: state/actions business logic
-- `src/ui/createAppUI.js`: DOM rendering and event wiring
-- `src/ui/docsPanel.js`: in-app Markdown docs viewer
-- `compose.yaml`: local container orchestration
-- `Dockerfile`: Vite build + Nginx runtime image
-- `docs/`: in-app loadable Markdown documentation
-- `dist/docs/index.json`: auto-generated docs manifest used by the in-app docs panel
-- `BRAINSTORM.md`: product direction and next decisions
+## Key Files
 
-## Docs Deep Link
-
-Open a specific docs page directly with:
-
-`#docs?file=<name>.md`
-
-Example:
-
-[http://localhost:8080/#docs?file=decisions.md](http://localhost:8080/#docs?file=decisions.md)
-
-## Quick Test Checklist
-
-1. Start dev server:
-
-```bash
-cd /Users/kermitv/Projects/Livify
-docker compose up livify-dev
-```
-
-2. Confirm docs manifest endpoint:
-
-[http://localhost:8080/docs/index.json](http://localhost:8080/docs/index.json)
-
-3. In app, open Docs panel and verify:
-- `ollama-windows-setup.md` appears in dropdown
-- selecting it renders content
-
-4. Verify deep links:
-- [http://localhost:8080/#docs?file=ollama-windows-setup.md](http://localhost:8080/#docs?file=ollama-windows-setup.md)
-- [http://localhost:8080/#docs?file=decisions.md](http://localhost:8080/#docs?file=decisions.md)
-
-5. Change docs via dropdown and verify URL hash updates; test browser back/forward sync.
+- `compose.yaml`: container startup behavior and volume wiring
+- `Dockerfile`: production image build (Vite build + nginx serve)
+- `vite.config.js`: Vite config, docs plugin, and `/api` dev proxy
+- `server/index.js`: local dev Express API (`POST /api/triage` mock proposals)
+- `src/features/inbox/InboxPage.tsx`: Inbox UI with reflect call + draft interpretations
+- `src/db/db.ts`: Dexie database and CRUD utilities
+- `src/db/schema.ts`: local data model types
