@@ -6,7 +6,7 @@ import {
   getInboxItemById,
   listInboxItems,
 } from "../../db/db";
-import type { InboxItem } from "../../db/schema";
+import type { InboxItem, Proposal, ProposalKind } from "../../db/schema";
 
 type CreateFormState = {
   title: string;
@@ -33,6 +33,8 @@ export function InboxPage() {
   const [formState, setFormState] = useState<CreateFormState>(INITIAL_FORM);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isReflecting, setIsReflecting] = useState(false);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,9 +44,11 @@ export function InboxPage() {
   useEffect(() => {
     if (!selectedId) {
       setSelectedItem(null);
+      setProposals([]);
       return;
     }
 
+    setProposals([]);
     void loadSelectedItem(selectedId);
   }, [selectedId]);
 
@@ -114,6 +118,7 @@ export function InboxPage() {
       await deleteInboxItem(selectedItem.id);
       setSelectedItem(null);
       setSelectedId(null);
+      setProposals([]);
       await refreshItems();
     } catch {
       setError("Failed to delete inbox item.");
@@ -121,6 +126,56 @@ export function InboxPage() {
       setIsDeleting(false);
     }
   }
+
+  async function handleReflectSelected() {
+    const target = selectedItem ?? selectedPreview;
+    if (!target) return;
+
+    try {
+      setError(null);
+      setIsReflecting(true);
+
+      const response = await fetch("/api/triage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inboxItemId: target.id,
+          rawText: target.rawText,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to reflect on inbox item");
+      }
+
+      const data = (await response.json()) as { proposals?: Proposal[] };
+      setProposals(Array.isArray(data.proposals) ? data.proposals : []);
+    } catch {
+      setError("Failed to fetch draft interpretations.");
+      setProposals([]);
+    } finally {
+      setIsReflecting(false);
+    }
+  }
+
+  const proposalsByKind = useMemo(() => {
+    const grouped: Record<ProposalKind, Proposal[]> = {
+      summary: [],
+      goal: [],
+      method: [],
+      action: [],
+      event: [],
+      risk: [],
+    };
+
+    for (const proposal of proposals) {
+      grouped[proposal.kind].push(proposal);
+    }
+
+    return grouped;
+  }, [proposals]);
 
   return (
     <main className="inbox-page">
@@ -222,9 +277,33 @@ export function InboxPage() {
                 <strong>Raw Text:</strong>
                 <pre className="raw-text">{(selectedItem ?? selectedPreview)?.rawText}</pre>
               </div>
-              <button type="button" onClick={handleDeleteSelected} disabled={isDeleting}>
-                {isDeleting ? "Deleting..." : "Delete item"}
-              </button>
+              <div className="detail-actions">
+                <button type="button" onClick={handleReflectSelected} disabled={isReflecting}>
+                  {isReflecting ? "Reflecting..." : "Reflect on this"}
+                </button>
+                <button type="button" onClick={handleDeleteSelected} disabled={isDeleting}>
+                  {isDeleting ? "Deleting..." : "Delete item"}
+                </button>
+              </div>
+              <section className="drafts">
+                <h3>Draft interpretations</h3>
+                {proposals.length === 0 ? (
+                  <p className="empty-state">No drafts yet. Click \"Reflect on this\".</p>
+                ) : (
+                  (Object.keys(proposalsByKind) as ProposalKind[])
+                    .filter((kind) => proposalsByKind[kind].length > 0)
+                    .map((kind) => (
+                      <div key={kind} className="draft-group">
+                        <h4>{kind}</h4>
+                        <ul>
+                          {proposalsByKind[kind].map((proposal) => (
+                            <li key={proposal.id}>{readProposalText(proposal.payload)}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))
+                )}
+              </section>
             </div>
           ) : (
             <p className="empty-state">Select an inbox item to view details.</p>
@@ -235,4 +314,9 @@ export function InboxPage() {
       {error ? <p className="error-banner">{error}</p> : null}
     </main>
   );
+}
+
+function readProposalText(payload: Proposal["payload"]): string {
+  const maybeText = payload?.text;
+  return typeof maybeText === "string" && maybeText.trim() ? maybeText : JSON.stringify(payload);
 }

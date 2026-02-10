@@ -138,6 +138,40 @@ button[disabled] {
   margin: 0 0 0.5rem;
 }
 
+.detail-actions {
+  display: flex;
+  gap: 0.55rem;
+  margin: 0.7rem 0 0.85rem;
+}
+
+.drafts h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.draft-group {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.5rem;
+  background: #fbfdfb;
+}
+
+.draft-group h4 {
+  margin: 0 0 0.3rem;
+  text-transform: capitalize;
+  font-size: 0.9rem;
+}
+
+.draft-group ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.draft-group li {
+  margin: 0.22rem 0;
+}
+
 .raw-text {
   margin-top: 0.3rem;
   border: 1px solid var(--line);

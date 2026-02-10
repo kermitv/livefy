@@ -37,6 +37,13 @@ It is designed to support Phase 2 POC only, while leaving clean extension points
 - `/api/triage`
 - Acts as the sole interface to LLM providers
 
+### Backend Boundary (Dev-Only)
+
+- Dev-only Express API
+- `POST /api/triage`
+- Purpose: reflection and proposal generation only
+- Proposals are drafts, not commitments
+
 ### LLM Provider Layer
 
 - Initial provider: Ollama (local)
