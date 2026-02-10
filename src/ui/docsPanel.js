@@ -1,8 +1,9 @@
-const DOC_FILES = [
+const FALLBACK_DOC_FILES = [
   "architecture.md",
   "capture-and-organize.md",
   "decisions.md",
   "livefy-overview.md",
+  "ollama-windows-setup.md",
   "next-actions.md",
   "ollama-setup.md",
   "open-loops.md",
@@ -12,19 +13,9 @@ const DOC_FILES = [
 ];
 
 export function createDocsPanel(elements) {
-  let selectedFile = DOC_FILES[0];
+  let docsFiles = [...FALLBACK_DOC_FILES];
+  let selectedFile = docsFiles[0];
   let isSyncingHash = false;
-
-  const fromHash = parseFileFromHash(window.location.hash);
-  if (fromHash) selectedFile = fromHash;
-
-  for (const fileName of DOC_FILES) {
-    const option = document.createElement("option");
-    option.value = fileName;
-    option.textContent = fileName;
-    elements.docsSelect.append(option);
-  }
-  elements.docsSelect.value = selectedFile;
 
   elements.docsSelect.addEventListener("change", () => {
     selectedFile = elements.docsSelect.value;
@@ -38,7 +29,7 @@ export function createDocsPanel(elements) {
 
   window.addEventListener("hashchange", () => {
     if (isSyncingHash) return;
-    const fileFromHash = parseFileFromHash(window.location.hash);
+    const fileFromHash = parseFileFromHash(window.location.hash, docsFiles);
     if (!fileFromHash) return;
     selectedFile = fileFromHash;
     elements.docsSelect.value = selectedFile;
@@ -46,9 +37,24 @@ export function createDocsPanel(elements) {
     void loadSelected();
   });
 
-  void loadSelected();
+  void initialize();
+
+  async function initialize() {
+    docsFiles = await fetchDocsManifest();
+    const fromHash = parseFileFromHash(window.location.hash, docsFiles);
+    if (fromHash) selectedFile = fromHash;
+    else if (!docsFiles.includes(selectedFile)) selectedFile = docsFiles[0];
+
+    renderDocsSelect(elements.docsSelect, docsFiles, selectedFile);
+    void loadSelected();
+  }
 
   async function loadSelected() {
+    if (!selectedFile) {
+      elements.docsStatus.textContent = "No docs available.";
+      elements.docsContent.textContent = "";
+      return;
+    }
     elements.docsStatus.textContent = `Loading ${selectedFile}...`;
     try {
       const markdown = await fetchDocText(selectedFile);
@@ -70,6 +76,24 @@ export function createDocsPanel(elements) {
   }
 }
 
+function renderDocsSelect(select, files, selectedFile) {
+  select.innerHTML = "";
+  for (const fileName of files) {
+    const option = document.createElement("option");
+    option.value = fileName;
+    option.textContent = fileName;
+    select.append(option);
+  }
+  select.value = selectedFile;
+}
+
+async function fetchDocsManifest() {
+  const manifest = await fetchJsonWithFallback("docs/index.json");
+  if (!manifest || !Array.isArray(manifest.docs)) return [...FALLBACK_DOC_FILES];
+  const docs = manifest.docs.filter((fileName) => typeof fileName === "string" && fileName.endsWith(".md"));
+  return docs.length > 0 ? docs : [...FALLBACK_DOC_FILES];
+}
+
 async function fetchDocText(fileName) {
   const baseUrl = new URL(".", document.baseURI);
   const localPathUrl = new URL(`docs/${fileName}`, baseUrl);
@@ -83,6 +107,24 @@ async function fetchDocText(fileName) {
     lastError = `${response.status} ${response.statusText}`.trim();
   }
   throw new Error(lastError || "Not found");
+}
+
+async function fetchJsonWithFallback(path) {
+  const baseUrl = new URL(".", document.baseURI);
+  const localPathUrl = new URL(path, baseUrl);
+  const rootPathUrl = new URL(`/${path}`, window.location.origin);
+  const candidates = [localPathUrl, rootPathUrl];
+
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url.toString(), { cache: "no-store" });
+      if (!response.ok) continue;
+      return await response.json();
+    } catch {
+      // Try next candidate URL.
+    }
+  }
+  return null;
 }
 
 function renderMarkdown(markdown) {
@@ -167,7 +209,7 @@ function renderInline(text) {
   return escaped;
 }
 
-function parseFileFromHash(hashValue) {
+function parseFileFromHash(hashValue, docsFiles) {
   const hash = String(hashValue || "").replace(/^#/, "");
   if (!hash.startsWith("docs")) return "";
   const queryIndex = hash.indexOf("?");
@@ -175,7 +217,7 @@ function parseFileFromHash(hashValue) {
   const query = hash.slice(queryIndex + 1);
   const params = new URLSearchParams(query);
   const fileName = params.get("file") || "";
-  return DOC_FILES.includes(fileName) ? fileName : "";
+  return docsFiles.includes(fileName) ? fileName : "";
 }
 
 function escapeHtml(value) {

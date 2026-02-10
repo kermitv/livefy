@@ -1,8 +1,15 @@
+FROM node:20-alpine AS build
+
+WORKDIR /app
+COPY package.json vite.config.js index.html styles.css main.js ./
+COPY src ./src
+COPY docs ./docs
+RUN npm install
+RUN npm run build
+
 FROM nginx:1.27-alpine
 
 WORKDIR /usr/share/nginx/html
-COPY index.html styles.css main.js ./
-COPY src ./src
-COPY docs ./docs
+COPY --from=build /app/dist ./
 
 EXPOSE 80
