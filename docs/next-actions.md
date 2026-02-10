@@ -1,27 +1,21 @@
 # Next Actions
 
-- Verify stable Ollama usage with 1–2 local models
-- Define reusable prompts for:
-  - Session recap
-  - Decision extraction
-  - Open loop capture
-- Implement Livefy Phase 1 UI:
-  - Inbox text area
-  - Extract button
-  - Display extracted items
-- Decide initial storage format (markdown vs JSON)
-- Define Inbox entry schema (minimal required fields + optional tags/project link)
-- Add basic processing flow:
-  - select inbox items
-  - extract into decisions/open loops/next actions
-  - require manual review before moving items
-- Add `docs/openclaw-integration.md` cross-links from overview/pitch docs
-- Add `docs/capture-and-organize.md` cross-links from overview and architecture
-- Define and document the minimal ingest API contract:
-  - `append_inbox`
-  - `create_open_loop`
-  - `create_task`
-- Choose OpenClaw runtime location:
-  - Home dedicated box (privacy-first), or
-  - VPS (availability-first)
-- Draft Phase 2 permission matrix (allowed actions vs explicit confirmation required)
+## Immediate
+- Migrate frontend to Vite while preserving current module boundaries
+- Keep Docker workflow working after Vite migration:
+  - dev container for hot reload
+  - production-style container serving built assets
+- Add first deployment target (pick one static host) and document release steps
+- Validate local Ollama setup and baseline model choice using `docs/ollama-setup.md`
+
+## Near-term
+- Add CI to build and publish `dist/` for the chosen host
+- Choose iOS path:
+  - Capacitor wrapper first, or
+  - shared UI stack migration first
+- Add second storage adapter stub for future native persistence (iOS/web parity)
+
+## Later
+- Decide backend posture (local-only vs optional cloud sync)
+- Define auth/sync strategy if cross-device sync is needed
+- Revisit OpenClaw integration once capture loop and app architecture are stable

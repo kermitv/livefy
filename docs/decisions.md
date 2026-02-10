@@ -11,3 +11,16 @@
 - Treat third-party skills/extensions as high risk until vetted process exists
 - Adopt "capture now, organize later" as the default UX rule for Phase 1
 - Defer runtime-placement decisions as tracked open loops; do not block capture workflow on infrastructure choices
+
+## 2026-02-09
+- Current frontend is vanilla web + ES modules (not Next.js, not Vite yet)
+- Keep Docker workflows for both production-style preview and live-reload dev
+- Direction chosen: migrate to Vite next for better DX and clean static deploy builds
+- Architecture refactor completed to support dual-target evolution (web now, iOS later):
+  - Versioned app state + migration layer
+  - Persistence adapter boundary
+  - Store/actions module for business logic
+  - UI module separated from state logic
+- iOS strategy remains open between:
+  - Capacitor wrapper around current web app, or
+  - Shared frontend stack (likely Vite + React) for web and iOS

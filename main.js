@@ -3,8 +3,8 @@ import { createStore } from "./src/store/createStore.js";
 import { createAppUI } from "./src/ui/createAppUI.js";
 
 const adapter = createLocalStorageAdapter({
-  key: "livify_state_v2",
-  fallbackKeys: ["livify_state_v1"],
+  key: "livify_state_v3",
+  fallbackKeys: ["livify_state_v2", "livify_state_v1"],
 });
 
 let ui = null;

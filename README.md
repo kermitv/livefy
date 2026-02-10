@@ -49,6 +49,18 @@ docker compose stop livify
 - `src/persistence/localStorageAdapter.js`: storage adapter boundary
 - `src/store/createStore.js`: state/actions business logic
 - `src/ui/createAppUI.js`: DOM rendering and event wiring
+- `src/ui/docsPanel.js`: in-app Markdown docs viewer
 - `compose.yaml`: local container orchestration
 - `Dockerfile`: static app container image
+- `docs/`: in-app loadable Markdown documentation
 - `BRAINSTORM.md`: product direction and next decisions
+
+## Docs Deep Link
+
+Open a specific docs page directly with:
+
+`#docs?file=<name>.md`
+
+Example:
+
+[http://localhost:8080/#docs?file=decisions.md](http://localhost:8080/#docs?file=decisions.md)

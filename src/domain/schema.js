@@ -1,4 +1,4 @@
-export const APP_STATE_VERSION = 2;
+export const APP_STATE_VERSION = 3;
 
 export function createEmptyState() {
   return {
@@ -11,6 +11,13 @@ export function createEmptyState() {
       notes: "",
       outcomes: "",
     },
+    capture: {
+      inboxDraft: "",
+      lastExtractedAt: null,
+    },
+    decisions: [],
+    openLoops: [],
+    nextActions: [],
     tasks: [],
     habits: [],
     habitChecksByDate: {},
@@ -25,6 +32,12 @@ export function migrateState(raw) {
   next.dashboard.energy = Number.isFinite(energy) ? Math.max(1, Math.min(10, energy)) : 6;
   next.dashboard.notes = String(raw.dashboard?.notes ?? raw.notes ?? "");
   next.dashboard.outcomes = String(raw.dashboard?.outcomes ?? raw.outcomes ?? "");
+  next.capture.inboxDraft = String(raw.capture?.inboxDraft ?? "");
+  next.capture.lastExtractedAt =
+    typeof raw.capture?.lastExtractedAt === "string" ? raw.capture.lastExtractedAt : null;
+  next.decisions = normalizeStructuredItems(raw.decisions);
+  next.openLoops = normalizeStructuredItems(raw.openLoops);
+  next.nextActions = normalizeStructuredItems(raw.nextActions);
 
   const tasks = Array.isArray(raw.tasks) ? raw.tasks : [];
   next.tasks = tasks
@@ -65,4 +78,16 @@ export function migrateState(raw) {
 function makeId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `id_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function normalizeStructuredItems(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item) => item && typeof item === "object" && typeof item.text === "string")
+    .map((item) => ({
+      id: typeof item.id === "string" ? item.id : makeId(),
+      text: item.text.trim(),
+      createdAt: typeof item.createdAt === "string" ? item.createdAt : new Date().toISOString(),
+    }))
+    .filter((item) => item.text.length > 0);
 }
