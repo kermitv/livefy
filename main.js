@@ -1,20 +1,14 @@
-import { createLocalStorageAdapter } from "./src/persistence/localStorageAdapter.js";
-import { createStore } from "./src/store/createStore.js";
-import { createAppUI } from "./src/ui/createAppUI.js";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { InboxPage } from "./src/features/inbox/InboxPage";
+import "./styles.css";
 
-const adapter = createLocalStorageAdapter({
-  key: "livify_state_v3",
-  fallbackKeys: ["livify_state_v2", "livify_state_v1"],
-});
+const mountNode = document.getElementById("app");
 
-let ui = null;
+if (!mountNode) {
+  throw new Error("Missing #app mount node");
+}
 
-const store = createStore({
-  adapter,
-  onChange: (state) => {
-    if (!ui) return;
-    ui.render(state);
-  },
-});
-
-ui = createAppUI({ store });
+createRoot(mountNode).render(
+  React.createElement(React.StrictMode, null, React.createElement(InboxPage)),
+);
