@@ -27,6 +27,7 @@ export interface Goal {
   createdAt: string;
   title: string;
   notes?: string;
+  status: "active" | "completed";
 }
 
 export interface Method {
@@ -45,7 +46,10 @@ export interface Action {
   notes?: string;
   dueDate?: string;
   pinned?: boolean;
+  status: "open" | "done" | "archived";
 }
+
+export const DEFAULT_ACTION_STATUS: Action["status"] = "open";
 
 export interface CreateInboxItemInput {
   title?: string;

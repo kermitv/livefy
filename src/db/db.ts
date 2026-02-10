@@ -10,7 +10,7 @@ import type {
 } from "./schema";
 
 const DB_NAME = "livify-phase2";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 function createId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -36,9 +36,9 @@ export class LivifyDexie extends Dexie {
     this.version(DB_VERSION).stores({
       inboxItems: "id, createdAt, sourceDate",
       proposals: "id, inboxItemId, kind, status, createdAt",
-      goals: "id, inboxItemId, createdAt",
+      goals: "id, inboxItemId, status, createdAt",
       methods: "id, inboxItemId, createdAt",
-      actions: "id, inboxItemId, dueDate, pinned, createdAt",
+      actions: "id, inboxItemId, status, dueDate, pinned, createdAt",
     });
   }
 }
