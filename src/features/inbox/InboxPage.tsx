@@ -180,13 +180,16 @@ export function InboxPage() {
   return (
     <main className="inbox-page">
       <header className="inbox-header">
+        <p className="eyebrow">Inbox</p>
         <h1>Livify Inbox</h1>
-        <p>Capture now, organize later.</p>
+        <p className="header-subtitle">Capture now, organize later.</p>
       </header>
 
       <section className="inbox-layout" aria-label="Inbox workspace">
-        <article className="panel" aria-label="Capture">
+        {/* Presentation-only pane separation to improve scanability and long-form reading comfort. */}
+        <article className="panel panel-capture" aria-label="Capture">
           <h2>Capture</h2>
+          <p className="panel-note">Paste raw text first. Structure comes later.</p>
           <form onSubmit={handleSubmit} className="capture-form">
             <label>
               Title (optional)
@@ -238,7 +241,7 @@ export function InboxPage() {
           </form>
         </article>
 
-        <article className="panel" aria-label="Inbox list">
+        <article className="panel panel-list" aria-label="Inbox list">
           <h2>Inbox</h2>
           <ul className="inbox-list">
             {items.map((item) => {
@@ -250,7 +253,7 @@ export function InboxPage() {
                     className={item.id === selectedId ? "inbox-item is-selected" : "inbox-item"}
                     onClick={() => setSelectedId(item.id)}
                   >
-                    <span>{label || "Untitled inbox item"}</span>
+                    <span className="inbox-item-title">{label || "Untitled inbox item"}</span>
                     <time>{formatDateTime(item.createdAt)}</time>
                   </button>
                 </li>
@@ -260,31 +263,50 @@ export function InboxPage() {
           </ul>
         </article>
 
-        <article className="panel" aria-label="Inbox detail">
+        <article className="panel panel-detail" aria-label="Inbox detail">
           <h2>Details</h2>
           {selectedItem || selectedPreview ? (
             <div className="detail">
-              <p>
-                <strong>Title:</strong> {(selectedItem ?? selectedPreview)?.title || "(none)"}
-              </p>
-              <p>
-                <strong>Source Date:</strong> {(selectedItem ?? selectedPreview)?.sourceDate || "(none)"}
-              </p>
-              <p>
-                <strong>Created:</strong> {formatDateTime((selectedItem ?? selectedPreview)!.createdAt)}
-              </p>
-              <div>
-                <strong>Raw Text:</strong>
+              {/* Metadata and source text are visually separated so source text remains primary. */}
+              <div className="detail-meta">
+                <p className="detail-row">
+                  <span className="detail-label">Title</span>
+                  <span className="detail-value">{(selectedItem ?? selectedPreview)?.title || "(none)"}</span>
+                </p>
+                <p className="detail-row">
+                  <span className="detail-label">Source Date</span>
+                  <span className="detail-value">{(selectedItem ?? selectedPreview)?.sourceDate || "(none)"}</span>
+                </p>
+                <p className="detail-row">
+                  <span className="detail-label">Created</span>
+                  <span className="detail-value">
+                    {formatDateTime((selectedItem ?? selectedPreview)!.createdAt)}
+                  </span>
+                </p>
+              </div>
+              <div className="detail-raw">
+                <h3>Raw Text</h3>
                 <pre className="raw-text">{(selectedItem ?? selectedPreview)?.rawText}</pre>
               </div>
               <div className="detail-actions">
-                <button type="button" onClick={handleReflectSelected} disabled={isReflecting}>
+                <button
+                  type="button"
+                  className="button-reflect"
+                  onClick={handleReflectSelected}
+                  disabled={isReflecting}
+                >
                   {isReflecting ? "Reflecting..." : "Reflect on this"}
                 </button>
-                <button type="button" onClick={handleDeleteSelected} disabled={isDeleting}>
+                <button
+                  type="button"
+                  className="button-delete"
+                  onClick={handleDeleteSelected}
+                  disabled={isDeleting}
+                >
                   {isDeleting ? "Deleting..." : "Delete item"}
                 </button>
               </div>
+              {/* Draft interpretations stay visually secondary and grouped without changing behavior. */}
               <section className="drafts">
                 <h3>Draft interpretations</h3>
                 {proposals.length === 0 ? (
